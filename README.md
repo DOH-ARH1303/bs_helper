@@ -1,2 +1,2 @@
-# bs_samplesheet_fetch
-Functions to grab samplesheets from Basespace
+# bs_helper
+Functions to download data from BaseSpace
