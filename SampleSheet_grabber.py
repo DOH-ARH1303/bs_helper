@@ -8,4 +8,4 @@
     # Then use that to grab sample sheet (for loop?)
 
 # Example of basespace CLI code to get information I need
-# $ bs list datasets -F Project.Name -F AppSession.Name -F AppSession.DateCompleted --filter-field=Project.Name --filter-term=WaitingforQC
+# $ bs list datasets -F Project.Name -F AppSession.Name -F AppSession.DateCompleted --project-name={project name} --filter-field={a dataset header} --filter-term={to look for in field}
