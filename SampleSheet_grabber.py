@@ -16,10 +16,28 @@
 # Default for date filter is DateModified -> set --date-field option to DateCompleted
 # $ bs list datasets -F Project.Name -F Appsession.Name -F AppSession.DateCompleted --date-field=DateCompleted --newer-than={time (d/y)} / --older-than={time}
 
-# $ bs download project --project-name={project name} --exclude '*' --include 'SampleSheet.csv' 
+#  --no-metadata stops json file from being created
+# $ bin/bs download project -n Practice -o ~/micromamba/envs/sample_sheets --exclude '*' --include '*SampleSheet.csv' --no-metadata 
+
 # Extract SampleSheet.csv files from undefined number of directories and move to current directory
 # Each instance overwrites itself. Could leave out -exec option and perform task(s) on each SampleSheet before moving onto next
-# $ find ./ -type f -name 'SampleSheet.csv' -exec mv {} ./
+# Just use file paths given by find and have commands/functions reach into directories to get file
+# $ find ./ -type f -name 'SampleSheet.csv' -exec mv {} ./ \;
+
+# Can grab files based on text in file
+# $find /home/sara/Documents -type f -exec grep -l "example" {} +
+
+#!/bin/python3
+import os
+def fromProject(project_name: str, output_location: str, most_recent=False, **kwargs):
+    if not isinstnace(kwargs.get('run_names'), list):
+        raise TypeError('run_names must be a list')
+    run_names = kwargs.get('run_names')
+    newer_than = kwargs.get('newer_than')
+    older_than = kwargs.get('older_than')
+    optional_params = [run_names, newer_than, older_than]
+    if all(i == optional_params[0] for i in optional_params) is True:
+        # grab SampleSheet.csv based on project_name and output_location only
 
 class Run:
     
