@@ -25,7 +25,11 @@
 # $ find ./ -type f -name 'SampleSheet.csv' -exec mv {} ./ \;
 
 # Can grab files based on text in file
-# $find /home/sara/Documents -type f -exec grep -l "example" {} +
+# $ find /home/sara/Documents -type f -exec grep -l "example" {} +
+# subprocess.check_output(['ls', '-l'])
+
+# Project given -> pulls dataset list and whatever other list will match with other data given/needed (i.e. run name)
+# Can only connect run name and project based on DateCreated columns
 
 #!/bin/python3
 import os
