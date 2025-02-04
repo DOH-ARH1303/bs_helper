@@ -68,7 +68,6 @@ class Project:
     def build_command(self):
         command = [self.sample_sheet_grabber.base_command, 'download project', f'-o {self.sample_sheet_grabber.output_location}']
         # -n {self.project_name} might need to add back here. Might be better to add at the end?
-        list_command = f'{self.sample_sheet_grabber.base_command} list projects'
         # # Would make more sense as a separate class or function. Project name = required attribute
         # if hasattr(self.optional_attr.most_recent_run):    
         #     sorted_projects = subprocess.run(f'{self.sample_sheet_grabber.base_command} list projects --sort-by=DateCreated', shell=True, capture_output=True, text=True)
@@ -78,13 +77,25 @@ class Project:
 
         if hasattr(self.optional_attr.newer_than):
             sorted_projects = subprocess.run(f'{self.sample_sheet_grabber.base_command} list projects --newer-than={self.optional_attr.newer_than}', shell=True, capture_output=True, text=True)
-            command.append(f'--date-field=DateCreated ')
         return " ".join(command)
 class Run:
-    def __init__(self, run_name):
+    def __init__(self, run_name, api_server, access_token, output_location):
         self.run_name = run_name
-        self.sample_sheet_grabber = SampleSheetGrabber()
+        self.sample_sheet_grabber = SampleSheetGrabber(run_name, api_server, access_token, output_location)
         self.optional_attr = OptionalAttributes()
+    def build_command(self):
+        command = [self.sample_sheet_grabber.base_command, 'download run', f'-o {self.sample_sheet_grabber.output_location}']
+        # -n {self.project_name} might need to add back here. Might be better to add at the end?
+        list_command = f'{self.sample_sheet_grabber.base_command} list run'
+        if (hasattr(self.optional_attr.project_name) and not (hasattr(self.optional_attr.most_recent) or hasattr(self.optional_attr.newer_than) or hasattr(self.optional_attr.older_than) or hasattr(self.optional_attr.biosamples))):
+            command.append(f'-n {self.optional_attr.project_name}')
+            # Might benefit from return " ".join(command) and do the subprocess.run step later?
+        if (hasattr(self.optional_attr.most_recent) and not (hasattr(self.optional_attr.newer_than) or hasattr(self.optional_attr.older_than) or hasattr(self.optional_attr.biosamples) or hasattr(self.optional_attr.project_name))):
+            sorted_runs = subprocess.run(f'{self.sample_sheet_grabber.base_command} list runs --sort-by=DateModified', shell=True, capture_output=True, text=True)
+            # might need an extra step to make sorted_runs a list of dictionaries
+            most_recent_run_name = sorted_runs[0].get("Name")
+            list_command.append(f'-n {most_recent_run_name}')
+        return subprocess.run(" ".join(command), shell=True)
 
 class Biosamples:
     def __init__(self, biosamples):
@@ -92,6 +103,7 @@ class Biosamples:
         self.sample_sheet_grabber = SampleSheetGrabber()
         self.optional_attr = OptionalAttributes()
 
+# Dataset lists can match biosample names and project names
 class Dataset:
     def __init__(self, project_name, biosamples):
         self.project_name = project_name
